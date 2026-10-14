@@ -2,13 +2,31 @@
 
 Reference implementation: meinewunschbank.ch. When in doubt, copy from there.
 
-## 1. Install
+## 1. Install and serve with Herd
+
+Sites live in `~/Jamon.digital/Webroot/`, which Herd has parked: every folder
+there is served as `<folder>.test` with no `herd link`. Name the folder after
+the production domain, TLD included (`meinewunschbank.ch` →
+`https://meinewunschbank.ch.test`).
 
 ```bash
+cd ~/Jamon.digital/Webroot
 composer create-project statamic/statamic <domain>
 cd <domain>
-herd secure
+herd secure                  # HTTPS for https://<domain>.test
 ```
+
+- PHP comes from Herd's global version (8.4). Only run `herd isolate <version>`
+  if the production server needs something else.
+- No database service needed — sqlite only holds the queue.
+- `APP_URL` in `.env` must be the `https://…test` URL, or Vite assets and
+  Glide URLs are served from the wrong origin.
+- `herd secure` must run **before** `npm run dev`: laravel-vite-plugin finds
+  Herd's certificate for `<domain>.test` and serves the dev server over HTTPS
+  too, which it can't do for a site that isn't secured yet.
+
+Then run `composer setup` (section 2) and create the first user with
+`php please make:user --super`.
 
 Laravel 13, Statamic 6. Statamic Pro on (`STATAMIC_PRO_ENABLED=true`).
 
