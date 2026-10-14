@@ -1,0 +1,28 @@
+<nav
+	aria-label="Hauptnavigation"
+	x-show="menu"
+	x-cloak
+	x-transition:enter="transition-[opacity,translate] ease-out duration-300 motion-reduce:duration-0"
+	x-transition:enter-start="opacity-0 -translate-y-full"
+	x-transition:enter-end="opacity-100 translate-y-0"
+	x-transition:leave="transition-[opacity,translate] ease-in duration-200 motion-reduce:duration-0"
+	x-transition:leave-start="opacity-100 translate-y-0"
+	x-transition:leave-end="opacity-0 -translate-y-full"
+	class="fixed inset-x-0 top-0 z-70 pb-40 bg-snow">
+
+	{{ partial:components/layout/container spacing="py-20" class="flex items-center justify-between" }}
+		<a href="/" aria-label="Zur Startseite">
+			{{ partial:components/logos/logo class="w-160 lg:w-200 h-auto" }}
+		</a>
+		{{ partial:components/menu/buttons/hide }}
+	{{ /partial:components/layout/container }}
+
+	{{ partial:components/layout/container class="mt-32 md:mt-44" }}
+		<ul class="flex flex-col gap-y-12 md:gap-y-18">
+			{{ nav:main }}
+				{{ partial:components/menu/item }}
+			{{ /nav:main }}
+		</ul>
+	{{ /partial:components/layout/container }}
+
+</nav>

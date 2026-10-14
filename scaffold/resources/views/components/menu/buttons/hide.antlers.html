@@ -1,0 +1,9 @@
+<button
+	type="button"
+	x-cloak
+	x-show="menu"
+	@click="menu = !menu"
+	aria-label="Menü schliessen"
+	class="cursor-pointer w-27 h-auto flex items-center justify-center {{ class }}">
+	{{ partial:components/icons/cross class="w-21 h-auto" }}
+</button>

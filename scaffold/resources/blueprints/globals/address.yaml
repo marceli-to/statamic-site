@@ -1,0 +1,18 @@
+title: Adresse
+tabs:
+  main:
+    display: Hauptbereich
+    sections:
+      -
+        fields:
+          -
+            handle: address
+            field:
+              buttons:
+                - bold
+                - removeformat
+                - anchor
+              toolbar_mode: floating
+              remove_empty_nodes: false
+              type: bard
+              display: Adresse

@@ -12,8 +12,12 @@ git clone https://github.com/marceli-to/statamic-site.git ~/.claude/skills/stata
 ## Contents
 
 - `SKILL.md` — when to use it, workflows, rules that apply everywhere
-- `references/setup.md` — new project: packages, config, content model baseline
+- `scaffold/` — the files every site starts with, laid over a fresh install
+- `scripts/scaffold.sh` — copies the scaffold, fills placeholders, installs and builds
+- `scripts/patch.php` — edits `.env`, Glide presets, static caching, composer/npm scripts, `.gitignore`
+- `references/setup.md` — new project with Herd, then the project-specific work
 - `references/css.md` — Tailwind 4 setup, spacing, type scale, breakpoints, images
 - `references/templates.md` — layout skeleton and component conventions
 - `references/blocks.md` — content blocks, fieldsets, blueprints
 - `references/javascript.md` — behaviors, Alpine, Vue islands, CP
+- `references/go-live.md` — launch checklist, production `.env`, static caching

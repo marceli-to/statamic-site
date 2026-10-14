@@ -12,7 +12,7 @@ resources/views/
 ├── sitemap.blade.php
 ├── mail/…                       Blade mailables
 └── components/                  everything else is a partial
-    ├── blocks.antlers.html      type → partial dispatch
+    ├── blocks.antlers.html      renders blocks/<type> (one dynamic partial call)
     ├── blocks/<handle>.antlers.html
     ├── layout/{html,head,body,header,main,footer,container,section}.antlers.html
     ├── menu/{container,item}.antlers.html
@@ -171,9 +171,11 @@ these few named steps rather than inventing per-block padding.
 			        {{ glide:image preset="lg" }} 1280w,
 			        {{ glide:image preset="xl" }} 1920w"
 			sizes="{{ sizes }}"
+			{{ if image:width }}width="{{ image:width }}" height="{{ image:height }}"{{ /if }}
 			alt="{{ alt }}"
 			class="block w-full h-auto {{ class ?? '' }}"
-			loading="{{ eager ? 'eager' : 'lazy' }}">
+			loading="{{ eager ? 'eager' : 'lazy' }}"
+			decoding="async">
 	</picture>
 	{{ if caption }}
 		<figcaption class="{{ captionClass }}">
@@ -182,6 +184,9 @@ these few named steps rather than inventing per-block padding.
 	{{ /if }}
 </figure>
 ```
+
+`width` / `height` come from the asset so the browser reserves the space before
+the file loads (no layout shift); an aspect class still overrides the ratio.
 
 Call it with `:image="field" :alt="field:alt"`, the aspect class, and a real
 `sizes` whenever the image isn't full width. `eager="true"` for the first image

@@ -3,7 +3,7 @@
 A page's `blocks` replicator drives everything. Fieldsets differ per project —
 what stays the same is how they are named, split and wired.
 
-## Adding a block — four edits, in this order
+## Adding a block — three edits
 
 1. **Fieldset** `resources/fieldsets/<handle>.yaml` holding the block's fields.
    Always a real fieldset, even for one field and even if only one block uses
@@ -23,15 +23,22 @@ what stays the same is how they are named, split and wired.
 3. **Partial** `resources/views/components/blocks/<handle-in-kebab-case>.antlers.html`
    (`page_teasers` → `page-teasers.antlers.html`). It opens with
    `layout/container` or `layout/section`, which owns the vertical spacing.
-4. **Branch** in `resources/views/components/blocks.antlers.html`:
 
-   ```antlers
-   {{ if type == 'page_teasers' }}
-   	{{ partial:components/blocks/page-teasers }}
-   {{ /if }}
-   ```
+That's it — `components/blocks.antlers.html` resolves the partial from the set
+handle, so there is no dispatch list to update:
+
+```antlers
+{{ partial :src="'components/blocks/' + (type | replace('_', '-'))" }}
+```
 
 **Set handle = fieldset filename = partial name** (partial in kebab-case).
+A mismatch throws a missing-view error on the page, and
+`tests/Feature/BlocksTest.php` catches it first: for every set in the pages
+blueprints it asserts the import, the fieldset and the partial. Run
+`php artisan test` after adding a block.
+
+Older projects have an `{{ if type == '…' }}` branch per block in
+`blocks.antlers.html`; there it's still a fourth edit.
 
 `default.antlers.html` is just:
 

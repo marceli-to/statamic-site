@@ -1,0 +1,16 @@
+title: Teaser
+fields:
+  -
+    handle: teaser_image
+    field:
+      type: assets
+      display: Bild
+      container: assets
+      max_files: 1
+      mode: list
+  -
+    handle: teaser_text
+    field:
+      type: textarea
+      display: Text
+      instructions: 'Freier Text'

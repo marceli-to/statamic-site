@@ -1,0 +1,15 @@
+title: Button
+fields:
+  -
+    handle: button_label
+    field:
+      type: text
+      display: 'Button-Text'
+      instructions: 'Ohne Text und Ziel wird kein Button ausgegeben.'
+  -
+    handle: button_link
+    field:
+      type: link
+      display: 'Button-Ziel'
+      collections:
+        - pages

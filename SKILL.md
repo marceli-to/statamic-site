@@ -1,14 +1,18 @@
 ---
 name: statamic-site
-description: House pattern for building Statamic 6 sites (Laravel 13, Tailwind 4, Vite, Antlers, Alpine, Vue islands). Use when setting up a new Statamic site, adding a content block / fieldset / blueprint, adding a template component or JS behavior, or touching the Tailwind setup in one of these projects.
+description: House pattern for building Statamic 6 sites (Laravel 13, Tailwind 4, Vite, Antlers, Alpine, Vue islands). Use when setting up a new Statamic site, adding a content block / fieldset / blueprint, adding a template component or JS behavior, touching the Tailwind setup, or preparing a go-live in one of these projects.
 ---
 
 # Statamic site
 
 The house pattern for Statamic sites, distilled from meinewunschbank.ch (the
-reference), kunsthaus.ch and valentinafrutig.ch. It is a guide, not a starter:
-content model, fieldsets and blocks differ per project; the structure, tooling
-and naming do not.
+reference), kunsthaus.ch and valentinafrutig.ch. Two parts:
+
+- `scaffold/` + `scripts/scaffold.sh` — the files that are the same on every
+  site (tooling, config, layout skeleton, shared fieldsets, sitemap, scheduler,
+  tests). Copied, never retyped.
+- `references/` — the conventions for everything that differs per site:
+  content model, blocks, design tokens, components, behaviors.
 
 Where an existing project disagrees with this guide, the project wins for that
 project — don't retrofit unless asked. New projects follow the guide.
@@ -23,13 +27,12 @@ Herd (`https://<domain>.test`).
 
 ## Workflows
 
-**New site** — follow `references/setup.md` top to bottom, then
-`references/css.md` for the Tailwind setup and `references/templates.md` for
-the layout skeleton. Finish by writing the project's own `CLAUDE.md` (see the
-end of `setup.md`).
+**New site** — `references/setup.md`: create the project in Herd, run
+`scripts/scaffold.sh`, then the project-specific work in the order listed
+there. Ends with writing the project's own `CLAUDE.md`.
 
-**Add a content block** — `references/blocks.md`. Four edits, always: fieldset,
-blueprint set, partial, branch in `blocks.antlers.html`.
+**Add a content block** — `references/blocks.md`. Three edits: fieldset,
+blueprint set, partial. Then `php artisan test`.
 
 **Add a component / partial** — `references/templates.md`.
 
@@ -37,6 +40,11 @@ blueprint set, partial, branch in `blocks.antlers.html`.
 
 **Styling questions** (spacing, font sizes, breakpoints, colours, images) —
 `references/css.md`.
+
+**Going live** — `references/go-live.md`.
+
+**Changing a convention** — update the scaffold file and the reference doc
+together, so new sites and the guide never disagree.
 
 ## Rules that apply everywhere
 

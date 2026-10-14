@@ -1,0 +1,25 @@
+{{#
+	@param href    - When set, renders an <a>; otherwise a <button type="button">.
+	@param variant - 'primary' (default, brand fill) or 'secondary' (outlined).
+	@param on      - Alpine @click expression for the <button> variant.
+	@param label   - aria-label.
+	@param class   - Extra classes.
+#}}
+{{ button_base = "btn inline-flex w-auto font-bold text-sm lg:text-md leading-none px-20 py-12 lg:px-32 lg:py-14 rounded-full border no-underline transition-colors" }}
+{{ button_variant = variant == 'secondary' ? "border-brand text-brand hover:bg-brand/15" : "border-transparent bg-brand text-snow hover:bg-brand/85" }}
+{{ if href }}
+	<a
+		href="{{ href }}"
+		{{ if label }}aria-label="{{ label }}"{{ /if }}
+		class="{{ button_base }} {{ button_variant }} {{ class }}">
+		{{ slot }}
+	</a>
+{{ else }}
+	<button
+		type="button"
+		{{ if on }}@click="{{ on }}"{{ /if }}
+		{{ if label }}aria-label="{{ label }}"{{ /if }}
+		class="{{ button_base }} cursor-pointer {{ button_variant }} {{ class }}">
+		{{ slot }}
+	</button>
+{{ /if }}

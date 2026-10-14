@@ -1,0 +1,28 @@
+title: 'Social Media'
+tabs:
+  main:
+    display: Hauptbereich
+    sections:
+      -
+        fields:
+          -
+            handle: facebook
+            field:
+              type: text
+              input_type: url
+              display: Facebook
+              placeholder: 'https://facebook.com'
+          -
+            handle: instagram
+            field:
+              type: text
+              input_type: url
+              display: Instagram
+              placeholder: 'https://instagram.com'
+          -
+            handle: linkedin
+            field:
+              type: text
+              input_type: url
+              display: LinkedIn
+              placeholder: 'https://linkedin.com'

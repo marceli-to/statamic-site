@@ -1,0 +1,63 @@
+title: Seite
+tabs:
+  main:
+    display: Inhalt
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              required: true
+              display: Titel
+              validate:
+                - required
+          -
+            handle: blocks
+            field:
+              type: replicator
+              display: 'Content Blocks'
+              collapse: true
+              sets:
+                main:
+                  display: Main
+                  sets:
+                    editor:
+                      display: Text
+                      instructions: 'Ein Textabschnitt mit Titel und Fliesstext'
+                      icon: fieldtype-text
+                      fields:
+                        - import: editor
+  settings:
+    display: Einstellungen
+    sections:
+      -
+        display: Teaser
+        instructions: 'Angaben für den Teaser dieser Seite.'
+        fields:
+          - import: teaser
+      -
+        display: SEO
+        fields:
+          - import: seo
+  sidebar:
+    display: Sidebar
+    sections:
+      -
+        fields:
+          -
+            handle: slug
+            field:
+              type: slug
+              localizable: true
+              validate: 'max:200'
+              show_regenerate: true
+      -
+        display: Template
+        fields:
+          -
+            handle: template
+            field:
+              type: template
+              display: Template

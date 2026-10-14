@@ -1,0 +1,59 @@
+@import "./partials/fonts.css";
+@import "tailwindcss";
+@import "./partials/font-sizes.css";
+
+@source "../views";
+@source "../../content";
+@source "../js/**/*.vue";
+@source "../**/*.js";
+
+/* Automatic source detection also walks public/, which holds the published
+	 CP bundle and would bloat the site stylesheet with its classes. */
+@source not "../../public";
+
+@theme {
+	/* 1:1 with pixels: p-16 = 16px, w-232 = 232px. No upper limit. */
+	--spacing: 0.0625rem;
+
+	/* md and lg only. */
+	--breakpoint-sm: initial;
+	--breakpoint-xl: initial;
+	--breakpoint-2xl: initial;
+
+	--font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+	--color-brand: #000000;
+	--color-snow: #FFFFFF;
+	--color-ink: #000000;
+}
+
+[x-cloak] {
+	@apply hidden!;
+}
+
+p:not(:last-child),
+ul:not(:last-child) {
+	@apply mb-16 md:mb-20 lg:mb-24;
+}
+
+strong, b {
+	@apply font-bold;
+}
+
+/* Bard renders its own headings, so they bypass the heading components. */
+article h2,
+article h3 {
+	@apply text-balance;
+}
+
+article ul {
+	@apply list-disc m-0 ml-20 md:ml-24 lg:ml-28;
+}
+
+article li {
+	@apply list-item;
+}
+
+article a:not(.btn) {
+	@apply underline underline-offset-2 hover:no-underline;
+}

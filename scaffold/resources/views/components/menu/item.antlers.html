@@ -1,0 +1,9 @@
+<li>
+	<a
+		href="{{ url }}"
+		{{ if is_active || is_current }}aria-current="page"{{ /if }}
+		class="font-bold text-lg md:text-xl leading-none hover:text-brand transition-colors {{ is_active || is_current ? 'text-brand' : '' }}"
+		x-on:click="menu = false">
+		{{ title }}
+	</a>
+</li>

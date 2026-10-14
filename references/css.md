@@ -160,8 +160,8 @@ Typekit projects use `@import url('https://use.typekit.net/<id>.css');` instead.
 ## Images
 
 Images are stored uncropped and cropped by CSS. Glide has one preset per width
-(`md` / `lg` / `xl` = 768 / 1280 / 1920, plus `-webp` twins) at `fit: max`, so
-a file is never upscaled. The ratio comes from an aspect class passed to
+(`md` / `lg` / `xl` = 768 / 1280 / 1920, plus `-webp` twins) at `fit: max` with
+only a width, so a file is never upscaled. The ratio comes from an aspect class passed to
 `media/image` with `object-cover` — `aspect-square`, or an arbitrary ratio such
 as `aspect-[16/7]` — varying per breakpoint where the design does. Never add
 per-ratio `crop_focal` presets.

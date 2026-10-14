@@ -1,0 +1,14 @@
+/* URLs are relative to this partial so Vite resolves and fingerprints them —
+	 an absolute /fonts/… path 404s in dev, where laravel-vite-plugin sets
+	 publicDir: false. */
+
+/*
+@font-face {
+	font-family: 'Family';
+	src: url('../../fonts/family-regular.woff2') format('woff2'),
+			 url('../../fonts/family-regular.woff') format('woff');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+*/

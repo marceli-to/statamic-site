@@ -1,0 +1,12 @@
+title: Asset
+tabs:
+  main:
+    sections:
+      -
+        fields:
+          -
+            handle: alt
+            field:
+              type: text
+              display: Alt-Text
+              instructions: 'Bildbeschreibung für Screenreader und Suchmaschinen.'

@@ -1,0 +1,44 @@
+<footer class="bg-ink text-snow">
+
+	{{ partial:components/layout/container spacing="py-20 md:py-28 lg:py-36" class="grid md:grid-cols-3 gap-32 text-xs md:text-sm" }}
+
+		{{# Address #}}
+		<div class="[&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:no-underline">
+			{{ address:address }}
+		</div>
+
+		{{# Social Media #}}
+		<div class="md:justify-self-center">
+			{{ partial:components/social-media }}
+		</div>
+
+		{{# Navigation #}}
+		<div class="md:justify-self-end md:text-right flex flex-col gap-y-24">
+			<nav aria-label="Fussnavigation">
+				<ul class="flex flex-col gap-y-4">
+					{{ nav:main }}
+						<li>
+							<a
+								href="{{ url }}"
+								class="hover:underline underline-offset-2"
+								{{ if is_current || is_parent }}aria-current="page"{{ /if }}>
+								{{ title }}
+							</a>
+						</li>
+					{{ /nav:main }}
+				</ul>
+			</nav>
+			<nav aria-label="Rechtliche Hinweise">
+				<ul class="flex flex-col gap-y-4">
+					{{ nav:privacy }}
+						<li>
+							<a href="{{ url }}" class="hover:underline underline-offset-2">{{ title }}</a>
+						</li>
+					{{ /nav:privacy }}
+				</ul>
+			</nav>
+		</div>
+
+	{{ /partial:components/layout/container }}
+
+</footer>

@@ -1,0 +1,38 @@
+{{#
+	@param image - Asset reference
+	@param alt - Alt text
+	@param sizes - CSS sizes attribute (default: "100vw")
+	@param class - Classes for the img, e.g. "aspect-square md:aspect-[16/7] object-cover"
+	@param wrapperClass - Classes for the figure wrapper
+	@param caption - Optional caption
+	@param captionClass - Classes for the figcaption
+	@param eager - Load eagerly (default: false)
+#}}
+{{ sizes = sizes ?? '100vw' }}
+<figure class="{{ wrapperClass }}">
+	<picture>
+		<source
+			type="image/webp"
+			srcset="{{ glide:image preset="md-webp" }} 768w,
+							{{ glide:image preset="lg-webp" }} 1280w,
+							{{ glide:image preset="xl-webp" }} 1920w"
+			sizes="{{ sizes }}">
+		{{# width/height reserve the space before the file loads; an aspect class overrides the ratio. #}}
+		<img
+			src="{{ glide:image preset="lg" }}"
+			srcset="{{ glide:image preset="md" }} 768w,
+							{{ glide:image preset="lg" }} 1280w,
+							{{ glide:image preset="xl" }} 1920w"
+			sizes="{{ sizes }}"
+			{{ if image:width }}width="{{ image:width }}" height="{{ image:height }}"{{ /if }}
+			alt="{{ alt }}"
+			class="block w-full h-auto {{ class ?? '' }}"
+			loading="{{ eager ? 'eager' : 'lazy' }}"
+			decoding="async">
+	</picture>
+	{{ if caption }}
+		<figcaption class="{{ captionClass }}">
+			{{ caption | nl2br }}
+		</figcaption>
+	{{ /if }}
+</figure>

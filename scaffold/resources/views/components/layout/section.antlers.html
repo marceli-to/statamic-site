@@ -1,0 +1,9 @@
+{{#
+	@param spacing - Vertical rhythm: 'none' (default), 'tight' (py-20 md:py-28
+									 lg:py-36), 'snug' (py-30 md:py-42 lg:py-54) or 'loose'
+									 (py-40 md:py-56 lg:py-72).
+	@param class - Extra classes.
+#}}
+<section class="{{ if spacing == 'tight' }}py-20 md:py-28 lg:py-36{{ elseif spacing == 'snug' }}py-30 md:py-42 lg:py-54{{ elseif spacing == 'loose' }}py-40 md:py-56 lg:py-72{{ /if }} {{ class }}">
+	{{ slot }}
+</section>

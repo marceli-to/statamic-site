@@ -1,300 +1,119 @@
 # Setting up a new site
 
-Reference implementation: meinewunschbank.ch. When in doubt, copy from there.
+The fixed parts — tooling, config, layout skeleton, shared fieldsets, sitemap,
+scheduler, the blocks test — come from `scaffold/` via `scripts/scaffold.sh`.
+Don't retype them; run the script and then spend the time on the
+project-specific parts (section 4).
 
-## 1. Install and serve with Herd
+## 1. Create the project in Herd
 
 Sites live in `~/Jamon.digital/Webroot/`, which Herd has parked: every folder
-there is served as `<folder>.test` with no `herd link`. Name the folder after
-the production domain, TLD included (`meinewunschbank.ch` →
-`https://meinewunschbank.ch.test`).
+there is served as `<folder>.test`, no `herd link`. Name the folder after the
+production domain, TLD included.
 
 ```bash
 cd ~/Jamon.digital/Webroot
 composer create-project statamic/statamic <domain>
-cd <domain>
-herd secure                  # HTTPS for https://<domain>.test
+herd secure <domain>
 ```
 
-- PHP comes from Herd's global version (8.4). Only run `herd isolate <version>`
-  if the production server needs something else.
-- No database service needed — sqlite only holds the queue.
-- `APP_URL` in `.env` must be the `https://…test` URL, or Vite assets and
-  Glide URLs are served from the wrong origin.
-- `herd secure` must run **before** `npm run dev`: laravel-vite-plugin finds
-  Herd's certificate for `<domain>.test` and serves the dev server over HTTPS
-  too, which it can't do for a site that isn't secured yet.
+`herd secure` has to come before the first `npm run dev`: laravel-vite-plugin
+looks for Herd's certificate for `<folder>.test` and serves the dev server over
+HTTPS with it. Without one it quietly falls back to plain HTTP, and the site
+gets mixed-content errors.
 
-Then run `composer setup` (section 2) and create the first user with
-`php please make:user --super`.
+PHP comes from Herd's global version (8.4). Only `herd isolate <version>` if
+production needs something else. No database service — sqlite only holds the
+queue.
 
-Laravel 13, Statamic 6. Statamic Pro on (`STATAMIC_PRO_ENABLED=true`).
+## 2. Lay the scaffold over it
 
-`.env.example`:
-
-```dotenv
-APP_URL=https://<domain>.test
-APP_LOCALE=de
-DB_CONNECTION=sqlite
-SESSION_DRIVER=file
-CACHE_STORE=file
-QUEUE_CONNECTION=database
-MAIL_HOST=127.0.0.1
-MAIL_PORT=1025
-MAIL_TO="<dev catch-all>"
-STATAMIC_PRO_ENABLED=true
+```bash
+~/.claude/skills/statamic-site/scripts/scaffold.sh ~/Jamon.digital/Webroot/<domain> <domain> "<Site name>"
 ```
 
-Flat-file install: users in `/users` (gitignored — password hashes), roles in
-`resources/users/roles.yaml`. sqlite holds only `jobs` / `failed_jobs`, so mail
-needs a worker locally (`composer dev`) and the scheduler in production.
+What it does:
 
-## 2. Composer
+- removes the starter's `site.css`, `site.js`, `home` template and home entry;
+- copies `scaffold/` into the project and fills in `__DOMAIN__` /
+  `__SITE_NAME__`;
+- runs `scripts/patch.php`, which edits files the scaffold can't own:
+  `.env` / `.env.example` (`APP_URL=https://<domain>.test`, `APP_LOCALE=de`,
+  database queue, Mailpit on 1025, Pro on, static caching `null`), Glide
+  presets, static-cache invalidation `rules => 'all'`, composer scripts
+  (`setup`, `lint`, `lint:fix`, CP publish on update), package.json (`cp:dev`,
+  `cp:build`, Alpine, `@statamic/cms`) and `.gitignore`;
+- requires php-cs-fixer, installs npm packages, migrates, publishes CP assets,
+  builds both bundles.
 
-`require-dev` adds `friendsofphp/php-cs-fixer` (Pint can't do tabs).
+Both scripts are safe to read before running; `patch.php` is idempotent.
 
-Scripts — keep the Laravel defaults and set these:
+Then:
 
-```json
-"setup": [
-    "composer install",
-    "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-    "@php artisan key:generate",
-    "@php artisan migrate --force",
-    "@php artisan vendor:publish --tag=statamic-cp --force",
-    "npm install --ignore-scripts",
-    "npm run build",
-    "npm run cp:build"
-],
-"dev": [
-    "Composer\\Config::disableProcessTimeout",
-    "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
-],
-"lint": ["php-cs-fixer fix --dry-run --diff"],
-"lint:fix": ["php-cs-fixer fix"],
-"post-update-cmd": [
-    "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-    "@php artisan vendor:publish --tag=statamic-cp --ansi --force"
-]
+```bash
+cd ~/Jamon.digital/Webroot/<domain>
+php please make:user --super
+git init && git add -A && git commit -m "Set up the site"
+composer dev        # server, queue, logs, vite (Laravel's `artisan dev`)
+php artisan test    # includes the blocks test
 ```
 
-## 3. npm
+Set `MAIL_TO` in `.env` to the dev catch-all.
 
-`package.json`:
+## 3. What the scaffold contains
 
-```json
-{
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "build": "vite build",
-        "dev": "vite",
-        "cp:dev": "vite --config vite-cp.config.js",
-        "cp:build": "vite build --config vite-cp.config.js"
-    },
-    "devDependencies": {
-        "@tailwindcss/vite": "^4",
-        "concurrently": "^9",
-        "laravel-vite-plugin": "^3",
-        "tailwindcss": "^4",
-        "vite": "^8"
-    },
-    "dependencies": {
-        "@alpinejs/collapse": "^3",
-        "@statamic/cms": "file:./vendor/statamic/cms/resources/dist-package",
-        "@vitejs/plugin-vue": "^6",
-        "alpinejs": "^3",
-        "vue": "^3"
-    }
-}
+```
+.editorconfig  .npmrc  .php-cs-fixer.php  jsconfig.json
+vite.config.js  vite-cp.config.js
+config/site.php                      mail_to (MAIL_TO)
+app/Providers/AppServiceProvider.php mail catch-all, CP Vite assets
+app/Http/Controllers/SitemapController.php
+routes/web.php                       /sitemap.xml
+routes/console.php                   scheduler drains the queue every minute
+public/robots.txt
+resources/css/app.css, cp.css, partials/{fonts,font-sizes}.css
+resources/js/app.js, cp.js, behaviors/
+resources/views/layout, default, errors/404, sitemap.blade.php
+resources/views/components/blocks + blocks/editor
+resources/views/components/layout/{html,head,body,main,header,footer,container,section}
+resources/views/components/menu/…, headings/h1–h4, media/image, button,
+    social-media, icons/{burger,cross,facebook,instagram,linkedin}, logos/logo
+resources/fieldsets/{editor,seo,button,teaser}.yaml
+resources/blueprints/collections/pages/page.yaml, assets/assets.yaml,
+    globals/{address,social_media}.yaml
+content/collections/pages.yaml + home entry, navigation/{main,privacy},
+    globals/{address,social_media}
+tests/Feature/BlocksTest.php
 ```
 
-Add `swiper` only when a slider is needed. Drop Vue and `@vitejs/plugin-vue`
-if the site has no island.
+The scaffold copies are the source of truth for these files. If a convention
+changes, change the scaffold file and the matching reference doc together.
 
-`.npmrc`:
+## 4. Project-specific work
 
-```ini
-ignore-scripts=true
-audit=true
-```
+In this order:
 
-## 4. Vite
+1. **Design tokens** in `app.css` (`--color-*`, `--font-*`) and the type scale
+   in `partials/font-sizes.css` — see `css.md`.
+2. **Fonts** into `resources/fonts/` and `partials/fonts.css`.
+3. **Logo** in `components/logos/logo.antlers.html` (inline SVG,
+   `currentColor`), favicons into `public/`, `public/img/og-image.jpg`
+   (1200×630).
+4. **Header, footer, menu** to the design. Keep their structure, change the
+   classes.
+5. **Container widths and gutters** in `layout/container`, rhythm steps in
+   `layout/section`.
+6. **Blocks** one by one — see `blocks.md`.
+7. **Globals**: trim `social_media` to the networks the client uses (blueprint,
+   `social-media` partial, icons).
+8. **Default meta description** in `layout/head` (`seo_description` fallback).
+9. **Vue** only if the site gets an island — see `javascript.md`.
 
-`vite.config.js`:
+## 5. Project CLAUDE.md and README
 
-```js
-import { defineConfig } from 'vite';
-import { fileURLToPath, URL } from 'node:url';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
-import tailwindcss from '@tailwindcss/vite';
-
-export default defineConfig({
-	plugins: [
-		laravel({
-			input: ['resources/css/app.css', 'resources/js/app.js'],
-			refresh: true,
-		}),
-		vue(),
-		tailwindcss(),
-	],
-	resolve: {
-		alias: {
-			'@': fileURLToPath(new URL('./resources/js', import.meta.url)),
-		},
-	},
-	server: {
-		watch: {
-			ignored: ['**/storage/framework/views/**'],
-		},
-	},
-});
-```
-
-`vite-cp.config.js` (Control Panel assets — custom fieldtypes, CP styles):
-
-```js
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import statamic from '@statamic/cms/vite-plugin';
-
-export default defineConfig({
-	plugins: [
-		statamic(),
-		laravel({
-			input: ['resources/css/cp.css', 'resources/js/cp.js'],
-			hotFile: 'public/cp-hot',
-			buildDirectory: 'vendor/app',
-		}),
-	],
-});
-```
-
-`jsconfig.json` so editors resolve `@/`:
-
-```json
-{
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": { "@/*": ["resources/js/*"] }
-    },
-    "exclude": ["node_modules", "public"]
-}
-```
-
-## 5. Editor config and code style
-
-`.editorconfig`:
-
-```ini
-root = true
-
-[*]
-charset = utf-8
-end_of_line = lf
-indent_style = tab
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-[*.md]
-trim_trailing_whitespace = false
-
-# YAML forbids tabs.
-[*.{yml,yaml}]
-indent_style = space
-indent_size = 2
-
-# Written by composer and npm, which indent with spaces.
-[*.json]
-indent_style = space
-indent_size = 4
-
-[package.json]
-indent_size = 2
-```
-
-`.php-cs-fixer.php`: copy from meinewunschbank.ch — PSR-12, close to Pint's
-`laravel` preset, `->setIndent("\t")`. Finder covers `app`, `config`,
-`database`, `routes`, `tests`; excludes `*.blade.php`.
-
-## 6. App wiring
-
-`AppServiceProvider::boot()`:
-
-```php
-// Outside production, funnel ALL outgoing mail to MAIL_TO (e.g. Mailpit)
-// so real recipient addresses are never contacted from dev/staging.
-if (!$this->app->isProduction() && ($catchAll = config('mail.to'))) {
-	Mail::alwaysTo($catchAll);
-}
-
-// Custom Control Panel assets — built by `npm run cp:build`.
-Statamic::vite('app', [
-	'input' => [
-		'resources/js/cp.js',
-		'resources/css/cp.css',
-	],
-	'hotFile' => public_path('cp-hot'),
-	'buildDirectory' => 'vendor/app',
-]);
-```
-
-`config/mail.php` gets `'to' => env('MAIL_TO'),`.
-
-**Sitemap** — `routes/web.php` registers
-`Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');`.
-The invokable `SitemapController` queries the routable collections
-(`COLLECTIONS = ['pages']`), keeps published, non-private, non-`noindex`
-entries that have a URL, maps to `loc` / `lastmod`, sorts by `loc`, and renders
-`resources/views/sitemap.blade.php` as `application/xml`. Copy both from
-meinewunschbank.ch and adjust `COLLECTIONS`.
-
-`.gitignore` additions: `/public/cp-hot`, `/users`, `/public/assets`,
-`.php-cs-fixer.cache`, plus any collection that holds submissions
-(`/content/collections/<name>/*` with a `.gitkeep` exception).
-
-## 7. Content model baseline
-
-Every site starts with:
-
-- **Asset container** `assets` on a `local` disk rooted at `public_path('assets')`,
-  URL `/assets`. Asset blueprint has one field, `alt` (Alt-Text, German
-  instructions).
-- **Glide presets** (`config/statamic/assets.php`) — one uncropped preset per
-  width, ratio is a CSS concern (see `css.md` → Images):
-
-  ```php
-  // One uncropped image per width — the natural ratio is kept. Ratios are
-  // a CSS concern: the caller sets an aspect-ratio class and object-cover,
-  // which also lets the ratio change per breakpoint from a single file.
-  'md-webp' => ['w' => 768, 'h' => 10000, 'q' => 90, 'fit' => 'max', 'fm' => 'webp'],
-  'lg-webp' => ['w' => 1280, 'h' => 10000, 'q' => 90, 'fit' => 'max', 'fm' => 'webp'],
-  'xl-webp' => ['w' => 1920, 'h' => 10000, 'q' => 90, 'fit' => 'max', 'fm' => 'webp'],
-  'md' => ['w' => 768, 'h' => 10000, 'q' => 90, 'fit' => 'max'],
-  'lg' => ['w' => 1280, 'h' => 10000, 'q' => 90, 'fit' => 'max'],
-  'xl' => ['w' => 1920, 'h' => 10000, 'q' => 90, 'fit' => 'max'],
-
-  'max_upload_size' => ['w' => 4000, 'h' => 4000, 'fit' => 'max'],
-  ```
-
-  Keep `generate_presets_on_upload` on.
-- **Collection** `pages` (title `Seiten`, `template: default`,
-  `route: '{parent_uri}/{slug}'`, `structure: root: true`). Blueprint `page` —
-  see `blocks.md`.
-- **Navigations** `main` (Hauptnavigation) and `privacy` (legal links), both on
-  `pages`.
-- **Globals** `address` (one Bard field `address`: bold, removeformat, anchor)
-  and `social_media` (url text fields per network, only the ones the design
-  uses).
-- **Fieldsets** `editor` and `seo` — see `blocks.md`.
-
-## 8. Project CLAUDE.md and README
-
-Every project gets a `CLAUDE.md` covering what this skill can't know: the
-colour token names, the font-size scale, which blocks exist, any project-only
-feature. Point at this skill for the rest rather than repeating it. The README
-documents setup (`composer setup`, `statamic:make:user --super`,
-`herd secure`), the cron entry for the scheduler, and how the content model
-fits together.
+Every project gets a `CLAUDE.md` with what this skill can't know: the colour
+tokens, the type scale, which blocks exist, project-only features, and
+anything that deviates from the skill. Point at the skill for the rest instead
+of repeating it. The README covers setup (`composer setup`,
+`php please make:user --super`, `herd secure`), the production cron entry and
+how the content model fits together.

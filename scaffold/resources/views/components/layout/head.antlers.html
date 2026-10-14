@@ -1,0 +1,45 @@
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+<meta name="csrf-token" content="{{ csrf_token }}">
+{{ site_name = "__SITE_NAME__" }}
+{{ seo_title = is_homepage ? site_name : "{title} — {site_name}" }}
+{{ seo_description = meta_description ?? "" }}
+{{ seo_image = "{config:app:url}{og_image ?? '/img/og-image.jpg'}" }}
+<title>{{ seo_title }}</title>
+<meta name="description" content="{{ seo_description }}">
+{{ if noindex }}<meta name="robots" content="noindex, nofollow">{{ /if }}
+<link rel="canonical" href="{{ current_url }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site_name }}">
+<meta property="og:locale" content="de_CH">
+<meta property="og:title" content="{{ seo_title }}">
+<meta property="og:description" content="{{ seo_description }}">
+<meta property="og:url" content="{{ current_url }}">
+<meta property="og:image" content="{{ seo_image }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ site_name }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ seo_title }}">
+<meta name="twitter:description" content="{{ seo_description }}">
+<meta name="twitter:image" content="{{ seo_image }}">
+<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="{{ site_name }}">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#ffffff">
+<script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"name": "{{ site_name }}",
+	"url": "{{ config:app:url }}/",
+	"inLanguage": "de-CH"
+}
+</script>
+{{ vite src="resources/css/app.css|resources/js/app.js" }}
+</head>

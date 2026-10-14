@@ -1,0 +1,12 @@
+@theme {
+	/* Only the design's sizes exist — Tailwind's defaults are cleared. */
+	--text-*: initial;
+
+	--text-xs: 0.875rem;   /* 14px */
+	--text-sm: 1rem;       /* 16px */
+	--text-md: 1.125rem;   /* 18px */
+	--text-lg: 1.375rem;   /* 22px */
+	--text-xl: 1.75rem;    /* 28px */
+	--text-2xl: 2.25rem;   /* 36px */
+	--text-3xl: 2.75rem;   /* 44px */
+}

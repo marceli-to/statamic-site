@@ -1,0 +1,8 @@
+{{#
+	@param compact - Narrow variant (78rem) instead of 96rem.
+	@param spacing - Vertical spacing, e.g. py-20 md:py-28.
+	@param class - Extra classes.
+#}}
+<div class="{{ if compact }}max-w-[78rem]{{ else }}max-w-[96rem]{{ /if }} mx-auto px-20 md:px-32 lg:px-44 {{ spacing ?? '' }} {{ class }}">
+	{{ slot }}
+</div>

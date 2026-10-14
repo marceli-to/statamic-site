@@ -1,0 +1,15 @@
+title: SEO
+fields:
+  -
+    handle: meta_description
+    field:
+      type: textarea
+      display: 'Meta Description'
+      localizable: false
+  -
+    handle: noindex
+    field:
+      type: toggle
+      display: 'Diese Seite von Suchmaschinen ausschliessen'
+      default: false
+      localizable: false
